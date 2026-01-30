@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { ExpenseFormData, Category, CATEGORIES, Expense } from "@/types/expense";
+import { ExpenseFormData, CATEGORIES, Expense } from "@/types/expense";
 import { getTodayString, getCategoryEmoji } from "@/lib/utils";
 
 interface Props {

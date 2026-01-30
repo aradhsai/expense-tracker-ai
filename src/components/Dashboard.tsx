@@ -159,7 +159,7 @@ export default function Dashboard({ stats }: Props) {
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
         <h3 className="text-sm font-semibold text-gray-900 mb-4">Last 30 Days</h3>
         <div className="flex items-end gap-[3px] h-24">
-          {stats.dailySpending.map((day, i) => (
+          {stats.dailySpending.map((day) => (
             <div
               key={day.date}
               className="flex-1 bg-indigo-400 rounded-t-sm transition-all duration-300 hover:bg-indigo-600 cursor-default group relative"
