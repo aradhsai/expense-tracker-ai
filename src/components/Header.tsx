@@ -22,6 +22,7 @@ export default function Header({ activeTab, onTabChange, expenses }: Props) {
               </svg>
             </div>
             <span className="text-lg font-bold text-gray-900">ExpenseTracker</span>
+            <span className="text-xs text-indigo-500 ml-2">Dark Mode</span>
           </div>
 
           {/* Navigation */}
@@ -64,3 +65,4 @@ export default function Header({ activeTab, onTabChange, expenses }: Props) {
     </header>
   );
 }
+
