@@ -1,101 +1,135 @@
-import Image from "next/image";
+"use client";
+
+import { useState } from "react";
+import { useExpenses } from "@/hooks/useExpenses";
+import Header from "@/components/Header";
+import Dashboard from "@/components/Dashboard";
+import ExpenseForm from "@/components/ExpenseForm";
+import ExpenseList from "@/components/ExpenseList";
+import { Expense } from "@/types/expense";
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const {
+    expenses,
+    filteredExpenses,
+    filters,
+    setFilters,
+    addExpense,
+    updateExpense,
+    deleteExpense,
+    stats,
+    isLoaded,
+  } = useExpenses();
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  const [activeTab, setActiveTab] = useState<"dashboard" | "expenses">("dashboard");
+  const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
+
+  function handleEdit(expense: Expense) {
+    setEditingExpense(expense);
+    setActiveTab("expenses");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function handleCancelEdit() {
+    setEditingExpense(null);
+  }
+
+  function handleSubmit(data: Parameters<typeof addExpense>[0]) {
+    if (editingExpense) {
+      updateExpense(editingExpense.id, data);
+      setEditingExpense(null);
+    } else {
+      addExpense(data);
+    }
+  }
+
+  if (!isLoaded) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-8 h-8 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin" />
+          <p className="text-sm text-gray-500">Loading your expenses...</p>
         </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <Header
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+        expenses={expenses}
+      />
+
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+        {activeTab === "dashboard" ? (
+          <div className="space-y-6">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
+              <p className="text-gray-500 text-sm mt-1">
+                Overview of your spending habits
+              </p>
+            </div>
+
+            {expenses.length === 0 ? (
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-12 text-center">
+                <div className="text-5xl mb-4">📊</div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  No data yet
+                </h3>
+                <p className="text-gray-500 mb-6 max-w-sm mx-auto">
+                  Start adding expenses to see your spending dashboard with charts and analytics.
+                </p>
+                <button
+                  onClick={() => setActiveTab("expenses")}
+                  className="inline-flex items-center gap-2 bg-indigo-600 text-white px-5 py-2.5 rounded-xl font-medium hover:bg-indigo-700 transition-colors"
+                >
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  </svg>
+                  Add Your First Expense
+                </button>
+              </div>
+            ) : (
+              <Dashboard stats={stats} />
+            )}
+          </div>
+        ) : (
+          <div className="space-y-6">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">Expenses</h1>
+              <p className="text-gray-500 text-sm mt-1">
+                Manage and track your expenses
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* Form */}
+              <div className="lg:col-span-1">
+                <div className="lg:sticky lg:top-24">
+                  <ExpenseForm
+                    onSubmit={handleSubmit}
+                    editingExpense={editingExpense}
+                    onCancelEdit={handleCancelEdit}
+                  />
+                </div>
+              </div>
+
+              {/* List */}
+              <div className="lg:col-span-2">
+                <ExpenseList
+                  expenses={filteredExpenses}
+                  filters={filters}
+                  onFiltersChange={setFilters}
+                  onEdit={handleEdit}
+                  onDelete={deleteExpense}
+                />
+              </div>
+            </div>
+          </div>
+        )}
       </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
     </div>
   );
 }
