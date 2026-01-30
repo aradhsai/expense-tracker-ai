@@ -2,23 +2,27 @@
 
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { Expense, ExpenseFormData, FilterState, Category } from "@/types/expense";
-import { generateId, getTodayString } from "@/lib/utils";
+import { getTodayString } from "@/lib/utils";
+import { supabase } from "@/lib/supabase";
 
-const STORAGE_KEY = "expense-tracker-data";
-
-function loadExpenses(): Expense[] {
-  if (typeof window === "undefined") return [];
-  try {
-    const data = localStorage.getItem(STORAGE_KEY);
-    return data ? JSON.parse(data) : [];
-  } catch {
-    return [];
-  }
+interface ExpenseRow {
+  id: string;
+  amount: number;
+  category: Category;
+  description: string;
+  date: string;
+  created_at: string;
 }
 
-function saveExpenses(expenses: Expense[]): void {
-  if (typeof window === "undefined") return;
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(expenses));
+function toExpense(row: ExpenseRow): Expense {
+  return {
+    id: row.id,
+    amount: Number(row.amount),
+    category: row.category,
+    description: row.description,
+    date: row.date,
+    createdAt: row.created_at,
+  };
 }
 
 export function useExpenses() {
@@ -34,46 +38,78 @@ export function useExpenses() {
   });
 
   useEffect(() => {
-    setExpenses(loadExpenses());
-    setIsLoaded(true);
+    async function fetchExpenses() {
+      const { data, error } = await supabase
+        .from("expenses")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        console.error("Failed to fetch expenses:", error);
+      } else {
+        setExpenses((data as ExpenseRow[]).map(toExpense));
+      }
+      setIsLoaded(true);
+    }
+    fetchExpenses();
   }, []);
 
-  useEffect(() => {
-    if (isLoaded) {
-      saveExpenses(expenses);
-    }
-  }, [expenses, isLoaded]);
-
-  const addExpense = useCallback((data: ExpenseFormData) => {
-    const expense: Expense = {
-      id: generateId(),
+  const addExpense = useCallback(async (data: ExpenseFormData) => {
+    const row = {
       amount: parseFloat(data.amount),
       category: data.category,
       description: data.description.trim(),
       date: data.date,
-      createdAt: new Date().toISOString(),
     };
+
+    const { data: inserted, error } = await supabase
+      .from("expenses")
+      .insert(row)
+      .select()
+      .single();
+
+    if (error) {
+      console.error("Failed to add expense:", error);
+      return null;
+    }
+
+    const expense = toExpense(inserted as ExpenseRow);
     setExpenses((prev) => [expense, ...prev]);
     return expense;
   }, []);
 
-  const updateExpense = useCallback((id: string, data: ExpenseFormData) => {
-    setExpenses((prev) =>
-      prev.map((e) =>
-        e.id === id
-          ? {
-              ...e,
-              amount: parseFloat(data.amount),
-              category: data.category,
-              description: data.description.trim(),
-              date: data.date,
-            }
-          : e
-      )
-    );
+  const updateExpense = useCallback(async (id: string, data: ExpenseFormData) => {
+    const updates = {
+      amount: parseFloat(data.amount),
+      category: data.category,
+      description: data.description.trim(),
+      date: data.date,
+    };
+
+    const { data: updated, error } = await supabase
+      .from("expenses")
+      .update(updates)
+      .eq("id", id)
+      .select()
+      .single();
+
+    if (error) {
+      console.error("Failed to update expense:", error);
+      return;
+    }
+
+    const expense = toExpense(updated as ExpenseRow);
+    setExpenses((prev) => prev.map((e) => (e.id === id ? expense : e)));
   }, []);
 
-  const deleteExpense = useCallback((id: string) => {
+  const deleteExpense = useCallback(async (id: string) => {
+    const { error } = await supabase.from("expenses").delete().eq("id", id);
+
+    if (error) {
+      console.error("Failed to delete expense:", error);
+      return;
+    }
+
     setExpenses((prev) => prev.filter((e) => e.id !== id));
   }, []);
 
