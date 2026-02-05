@@ -7,6 +7,7 @@ import Dashboard from "@/components/Dashboard";
 import ExpenseForm from "@/components/ExpenseForm";
 import ExpenseList from "@/components/ExpenseList";
 import { Expense } from "@/types/expense";
+import { Plus } from "lucide-react";
 
 export default function Home() {
   const {
@@ -45,17 +46,17 @@ export default function Home() {
 
   if (!isLoaded) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-surface-primary flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
-          <div className="w-8 h-8 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin" />
-          <p className="text-sm text-gray-500">Loading your expenses...</p>
+          <div className="w-10 h-10 border-3 border-primary border-t-transparent rounded-full animate-spin" />
+          <p className="text-sm text-content-secondary">Loading your expenses...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-surface-primary">
       <Header
         activeTab={activeTab}
         onTabChange={setActiveTab}
@@ -64,30 +65,30 @@ export default function Home() {
 
       <main className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
         {activeTab === "dashboard" ? (
-          <div className="space-y-6">
+          <div className="space-y-6 animate-fade-in">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-              <p className="text-gray-500 text-sm mt-1">
+              <h1 className="text-2xl font-bold text-content-primary">Dashboard</h1>
+              <p className="text-content-secondary text-sm mt-1">
                 Overview of your spending habits
               </p>
             </div>
 
             {expenses.length === 0 ? (
-              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-12 text-center">
-                <div className="text-5xl mb-4">📊</div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              <div className="bg-surface-secondary rounded-2xl shadow-soft border border-border p-12 text-center">
+                <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-surface-tertiary flex items-center justify-center">
+                  <span className="text-4xl">📊</span>
+                </div>
+                <h3 className="text-lg font-semibold text-content-primary mb-2">
                   No data yet
                 </h3>
-                <p className="text-gray-500 mb-6 max-w-sm mx-auto">
+                <p className="text-content-secondary mb-6 max-w-sm mx-auto">
                   Start adding expenses to see your spending dashboard with charts and analytics.
                 </p>
                 <button
                   onClick={() => setActiveTab("expenses")}
-                  className="inline-flex items-center gap-2 bg-indigo-600 text-white px-5 py-2.5 rounded-xl font-medium hover:bg-indigo-700 transition-colors"
+                  className="inline-flex items-center gap-2 gradient-primary text-white px-5 py-2.5 rounded-xl font-medium hover:opacity-90 transition-all shadow-soft hover:shadow-medium"
                 >
-                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                  </svg>
+                  <Plus className="w-4 h-4" />
                   Add Your First Expense
                 </button>
               </div>
@@ -96,10 +97,10 @@ export default function Home() {
             )}
           </div>
         ) : (
-          <div className="space-y-6">
+          <div className="space-y-6 animate-fade-in">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Expenses</h1>
-              <p className="text-gray-500 text-sm mt-1">
+              <h1 className="text-2xl font-bold text-content-primary">Expenses</h1>
+              <p className="text-content-secondary text-sm mt-1">
                 Manage and track your expenses
               </p>
             </div>

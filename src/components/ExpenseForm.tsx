@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { ExpenseFormData, CATEGORIES, Expense } from "@/types/expense";
 import { getTodayString, getCategoryEmoji } from "@/lib/utils";
+import { CheckCircle } from "lucide-react";
 
 interface Props {
   onSubmit: (data: ExpenseFormData) => void;
@@ -80,19 +81,19 @@ export default function ExpenseForm({ onSubmit, editingExpense, onCancelEdit }: 
   }
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-      <h2 className="text-lg font-semibold text-gray-900 mb-5">
+    <form onSubmit={handleSubmit} className="bg-surface-secondary rounded-2xl shadow-soft border border-border p-6">
+      <h2 className="text-lg font-semibold text-content-primary mb-5">
         {editingExpense ? "Edit Expense" : "Add Expense"}
       </h2>
 
       <div className="space-y-4">
         {/* Amount */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">
+          <label className="block text-sm font-medium text-content-secondary mb-1.5">
             Amount
           </label>
           <div className="relative">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 font-medium">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-content-tertiary font-medium">
               ₹
             </span>
             <input
@@ -103,21 +104,21 @@ export default function ExpenseForm({ onSubmit, editingExpense, onCancelEdit }: 
               placeholder="0.00"
               value={form.amount}
               onChange={(e) => setForm({ ...form, amount: e.target.value })}
-              className={`w-full pl-8 pr-4 py-2.5 border rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 transition-colors ${
+              className={`w-full pl-8 pr-4 py-2.5 border rounded-xl text-content-primary bg-surface-primary placeholder-content-tertiary focus:outline-none focus:ring-2 transition-all ${
                 errors.amount
-                  ? "border-red-300 focus:ring-red-200"
-                  : "border-gray-200 focus:ring-indigo-200 focus:border-indigo-400"
+                  ? "border-danger focus:ring-danger/20"
+                  : "border-border focus:ring-primary/20 focus:border-primary"
               }`}
             />
           </div>
           {errors.amount && (
-            <p className="mt-1 text-sm text-red-500">{errors.amount}</p>
+            <p className="mt-1 text-sm text-danger">{errors.amount}</p>
           )}
         </div>
 
         {/* Category */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">
+          <label className="block text-sm font-medium text-content-secondary mb-1.5">
             Category
           </label>
           <div className="grid grid-cols-3 gap-2">
@@ -128,8 +129,8 @@ export default function ExpenseForm({ onSubmit, editingExpense, onCancelEdit }: 
                 onClick={() => setForm({ ...form, category: cat })}
                 className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium transition-all ${
                   form.category === cat
-                    ? "bg-indigo-50 text-indigo-700 border-2 border-indigo-300 shadow-sm"
-                    : "bg-gray-50 text-gray-600 border-2 border-transparent hover:bg-gray-100"
+                    ? "bg-primary/10 text-primary border-2 border-primary/30 shadow-sm"
+                    : "bg-surface-tertiary text-content-secondary border-2 border-transparent hover:bg-surface-tertiary/80"
                 }`}
               >
                 <span>{getCategoryEmoji(cat)}</span>
@@ -141,7 +142,7 @@ export default function ExpenseForm({ onSubmit, editingExpense, onCancelEdit }: 
 
         {/* Description */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">
+          <label className="block text-sm font-medium text-content-secondary mb-1.5">
             Description
           </label>
           <input
@@ -150,20 +151,20 @@ export default function ExpenseForm({ onSubmit, editingExpense, onCancelEdit }: 
             value={form.description}
             onChange={(e) => setForm({ ...form, description: e.target.value })}
             maxLength={200}
-            className={`w-full px-4 py-2.5 border rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 transition-colors ${
+            className={`w-full px-4 py-2.5 border rounded-xl text-content-primary bg-surface-primary placeholder-content-tertiary focus:outline-none focus:ring-2 transition-all ${
               errors.description
-                ? "border-red-300 focus:ring-red-200"
-                : "border-gray-200 focus:ring-indigo-200 focus:border-indigo-400"
+                ? "border-danger focus:ring-danger/20"
+                : "border-border focus:ring-primary/20 focus:border-primary"
             }`}
           />
           {errors.description && (
-            <p className="mt-1 text-sm text-red-500">{errors.description}</p>
+            <p className="mt-1 text-sm text-danger">{errors.description}</p>
           )}
         </div>
 
         {/* Date */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">
+          <label className="block text-sm font-medium text-content-secondary mb-1.5">
             Date
           </label>
           <input
@@ -171,14 +172,14 @@ export default function ExpenseForm({ onSubmit, editingExpense, onCancelEdit }: 
             value={form.date}
             onChange={(e) => setForm({ ...form, date: e.target.value })}
             max={getTodayString()}
-            className={`w-full px-4 py-2.5 border rounded-xl text-gray-900 focus:outline-none focus:ring-2 transition-colors ${
+            className={`w-full px-4 py-2.5 border rounded-xl text-content-primary bg-surface-primary focus:outline-none focus:ring-2 transition-all ${
               errors.date
-                ? "border-red-300 focus:ring-red-200"
-                : "border-gray-200 focus:ring-indigo-200 focus:border-indigo-400"
+                ? "border-danger focus:ring-danger/20"
+                : "border-border focus:ring-primary/20 focus:border-primary"
             }`}
           />
           {errors.date && (
-            <p className="mt-1 text-sm text-red-500">{errors.date}</p>
+            <p className="mt-1 text-sm text-danger">{errors.date}</p>
           )}
         </div>
 
@@ -186,7 +187,7 @@ export default function ExpenseForm({ onSubmit, editingExpense, onCancelEdit }: 
         <div className="flex gap-3 pt-2">
           <button
             type="submit"
-            className="flex-1 bg-indigo-600 text-white py-2.5 px-4 rounded-xl font-medium hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-200 transition-colors"
+            className="flex-1 gradient-primary text-white py-2.5 px-4 rounded-xl font-medium hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all shadow-soft hover:shadow-medium"
           >
             {editingExpense ? "Update Expense" : "Add Expense"}
           </button>
@@ -194,7 +195,7 @@ export default function ExpenseForm({ onSubmit, editingExpense, onCancelEdit }: 
             <button
               type="button"
               onClick={handleCancel}
-              className="px-4 py-2.5 border border-gray-200 rounded-xl text-gray-600 font-medium hover:bg-gray-50 transition-colors"
+              className="px-4 py-2.5 border border-border rounded-xl text-content-secondary font-medium hover:bg-surface-tertiary transition-all"
             >
               Cancel
             </button>
@@ -203,7 +204,8 @@ export default function ExpenseForm({ onSubmit, editingExpense, onCancelEdit }: 
 
         {/* Success Message */}
         {showSuccess && (
-          <div className="bg-emerald-50 text-emerald-700 px-4 py-3 rounded-xl text-sm font-medium text-center animate-fade-in">
+          <div className="flex items-center justify-center gap-2 bg-success/10 text-success px-4 py-3 rounded-xl text-sm font-medium animate-fade-in">
+            <CheckCircle className="w-4 h-4" />
             Expense added successfully!
           </div>
         )}
