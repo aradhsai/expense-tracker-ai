@@ -1,0 +1,370 @@
+{
+  "info": {
+    "name": "Spendwise API",
+    "description": "Public REST API for the Spendwise expense tracker application.\n\n## Authentication\nAll endpoints (except `/health`) require an API key.\n\nProvide your API key via:\n- `Authorization: Bearer spw_live_xxxxx`\n- `X-API-Key: spw_live_xxxxx`\n\n## Rate Limits\n- 60 requests per minute\n- 10,000 requests per day\n\nHeaders returned:\n- `X-RateLimit-Limit`\n- `X-RateLimit-Remaining`\n- `X-RateLimit-Reset`",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{api_key}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "api_key",
+      "value": "spw_live_your_api_key_here",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/health",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "health"]
+            },
+            "description": "Check API and database health status. No authentication required."
+          },
+          "response": [
+            {
+              "name": "Healthy",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"status\": \"healthy\",\n    \"database\": \"connected\",\n    \"timestamp\": \"2026-02-05T07:14:17.730Z\",\n    \"version\": \"1.0.0\"\n  },\n  \"meta\": {\n    \"request_id\": \"req_abc123\",\n    \"timestamp\": \"2026-02-05T07:14:17.730Z\"\n  }\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Categories",
+      "item": [
+        {
+          "name": "List Categories",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/categories",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "categories"]
+            },
+            "description": "Get all valid expense categories."
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"categories\": [\n      \"Food\",\n      \"Transportation\",\n      \"Entertainment\",\n      \"Shopping\",\n      \"Bills\",\n      \"Other\"\n    ]\n  },\n  \"meta\": {\n    \"request_id\": \"req_abc123\",\n    \"timestamp\": \"2026-02-05T07:14:32.830Z\"\n  }\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Expenses",
+      "item": [
+        {
+          "name": "List Expenses",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/expenses?page=1&limit=20&sort_by=date&sort_order=desc",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "expenses"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Page number (default: 1)"
+                },
+                {
+                  "key": "limit",
+                  "value": "20",
+                  "description": "Items per page (default: 20, max: 100)"
+                },
+                {
+                  "key": "category",
+                  "value": "Food",
+                  "description": "Filter by category",
+                  "disabled": true
+                },
+                {
+                  "key": "date_from",
+                  "value": "2026-01-01",
+                  "description": "Filter from date (YYYY-MM-DD)",
+                  "disabled": true
+                },
+                {
+                  "key": "date_to",
+                  "value": "2026-12-31",
+                  "description": "Filter to date (YYYY-MM-DD)",
+                  "disabled": true
+                },
+                {
+                  "key": "search",
+                  "value": "lunch",
+                  "description": "Search in description",
+                  "disabled": true
+                },
+                {
+                  "key": "sort_by",
+                  "value": "date",
+                  "description": "Sort field: date, amount, category"
+                },
+                {
+                  "key": "sort_order",
+                  "value": "desc",
+                  "description": "Sort order: asc, desc"
+                }
+              ]
+            },
+            "description": "Get paginated list of expenses with optional filtering and sorting."
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"items\": [\n      {\n        \"id\": \"8c5aec29-031b-4aa7-97e5-a55d7910136f\",\n        \"amount\": 45,\n        \"category\": \"Bills\",\n        \"description\": \"Electric bill\",\n        \"date\": \"2026-02-02\",\n        \"createdAt\": \"2026-02-02T06:44:40.152186+00:00\"\n      }\n    ],\n    \"pagination\": {\n      \"page\": 1,\n      \"limit\": 20,\n      \"total\": 4,\n      \"total_pages\": 1,\n      \"has_next\": false,\n      \"has_prev\": false\n    }\n  },\n  \"meta\": {\n    \"request_id\": \"req_abc123\",\n    \"timestamp\": \"2026-02-05T07:14:33.746Z\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Create Expense",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 25.50,\n  \"category\": \"Food\",\n  \"description\": \"Lunch at cafe\",\n  \"date\": \"2026-02-05\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/expenses",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "expenses"]
+            },
+            "description": "Create a new expense.\n\n**Required fields:**\n- `amount` (number): Positive number, max 999,999.99\n- `category` (string): One of: Food, Transportation, Entertainment, Shopping, Bills, Other\n- `description` (string): 1-200 characters\n- `date` (string): YYYY-MM-DD format"
+          },
+          "response": [
+            {
+              "name": "Created",
+              "status": "Created",
+              "code": 201,
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": \"5923cd5f-397e-475d-9295-2c75fb744e51\",\n    \"amount\": 25.5,\n    \"category\": \"Food\",\n    \"description\": \"Lunch at cafe\",\n    \"date\": \"2026-02-05\",\n    \"createdAt\": \"2026-02-05T07:14:56.313373+00:00\"\n  },\n  \"meta\": {\n    \"request_id\": \"req_abc123\",\n    \"timestamp\": \"2026-02-05T07:14:56.349Z\"\n  }\n}"
+            },
+            {
+              "name": "Validation Error",
+              "status": "Bad Request",
+              "code": 400,
+              "body": "{\n  \"success\": false,\n  \"error\": {\n    \"code\": \"VALIDATION_ERROR\",\n    \"message\": \"Invalid request data\",\n    \"details\": {\n      \"amount\": \"Amount must be greater than 0\"\n    }\n  },\n  \"meta\": {\n    \"request_id\": \"req_abc123\",\n    \"timestamp\": \"2026-02-05T07:14:56.349Z\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Expense",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/expenses/:id",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "expenses", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "8c5aec29-031b-4aa7-97e5-a55d7910136f",
+                  "description": "Expense UUID"
+                }
+              ]
+            },
+            "description": "Get a single expense by ID."
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": \"8c5aec29-031b-4aa7-97e5-a55d7910136f\",\n    \"amount\": 45,\n    \"category\": \"Bills\",\n    \"description\": \"Electric bill\",\n    \"date\": \"2026-02-02\",\n    \"createdAt\": \"2026-02-02T06:44:40.152186+00:00\"\n  },\n  \"meta\": {\n    \"request_id\": \"req_abc123\",\n    \"timestamp\": \"2026-02-05T07:14:57.305Z\"\n  }\n}"
+            },
+            {
+              "name": "Not Found",
+              "status": "Not Found",
+              "code": 404,
+              "body": "{\n  \"success\": false,\n  \"error\": {\n    \"code\": \"NOT_FOUND\",\n    \"message\": \"Expense with id 'invalid-id' not found\"\n  },\n  \"meta\": {\n    \"request_id\": \"req_abc123\",\n    \"timestamp\": \"2026-02-05T07:14:57.305Z\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update Expense (Full)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 30.00,\n  \"category\": \"Food\",\n  \"description\": \"Updated lunch expense\",\n  \"date\": \"2026-02-05\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/expenses/:id",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "expenses", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "8c5aec29-031b-4aa7-97e5-a55d7910136f",
+                  "description": "Expense UUID"
+                }
+              ]
+            },
+            "description": "Full update of an expense. All fields are required."
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": \"8c5aec29-031b-4aa7-97e5-a55d7910136f\",\n    \"amount\": 30,\n    \"category\": \"Food\",\n    \"description\": \"Updated lunch expense\",\n    \"date\": \"2026-02-05\",\n    \"createdAt\": \"2026-02-02T06:44:40.152186+00:00\"\n  },\n  \"meta\": {\n    \"request_id\": \"req_abc123\",\n    \"timestamp\": \"2026-02-05T07:14:58.171Z\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update Expense (Partial)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 35.00\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/expenses/:id",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "expenses", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "8c5aec29-031b-4aa7-97e5-a55d7910136f",
+                  "description": "Expense UUID"
+                }
+              ]
+            },
+            "description": "Partial update of an expense. Only include fields you want to change."
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": \"8c5aec29-031b-4aa7-97e5-a55d7910136f\",\n    \"amount\": 35,\n    \"category\": \"Food\",\n    \"description\": \"Updated lunch expense\",\n    \"date\": \"2026-02-05\",\n    \"createdAt\": \"2026-02-02T06:44:40.152186+00:00\"\n  },\n  \"meta\": {\n    \"request_id\": \"req_abc123\",\n    \"timestamp\": \"2026-02-05T07:14:58.171Z\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Delete Expense",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/expenses/:id",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "expenses", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "8c5aec29-031b-4aa7-97e5-a55d7910136f",
+                  "description": "Expense UUID"
+                }
+              ]
+            },
+            "description": "Delete an expense by ID."
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"deleted\": true\n  },\n  \"meta\": {\n    \"request_id\": \"req_abc123\",\n    \"timestamp\": \"2026-02-05T07:14:59.136Z\"\n  }\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Statistics",
+      "item": [
+        {
+          "name": "Get Expense Stats",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/expenses/stats",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "expenses", "stats"],
+              "query": [
+                {
+                  "key": "date_from",
+                  "value": "2026-01-01",
+                  "description": "Filter from date (YYYY-MM-DD)",
+                  "disabled": true
+                },
+                {
+                  "key": "date_to",
+                  "value": "2026-12-31",
+                  "description": "Filter to date (YYYY-MM-DD)",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Get expense statistics including totals, averages, and breakdowns by category and month."
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"total_spending\": 170,\n    \"monthly_spending\": 99,\n    \"daily_average\": 19.8,\n    \"expense_count\": 4,\n    \"category_breakdown\": [\n      {\n        \"category\": \"Shopping\",\n        \"total\": 54,\n        \"count\": 1,\n        \"percentage\": 31.76\n      },\n      {\n        \"category\": \"Transportation\",\n        \"total\": 50,\n        \"count\": 1,\n        \"percentage\": 29.41\n      }\n    ],\n    \"monthly_breakdown\": [\n      {\n        \"month\": \"2026-01\",\n        \"total\": 71,\n        \"count\": 2\n      },\n      {\n        \"month\": \"2026-02\",\n        \"total\": 99,\n        \"count\": 2\n      }\n    ]\n  },\n  \"meta\": {\n    \"request_id\": \"req_abc123\",\n    \"timestamp\": \"2026-02-05T07:14:34.345Z\"\n  }\n}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
