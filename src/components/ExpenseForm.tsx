@@ -41,7 +41,7 @@ export default function ExpenseForm({ onSubmit, editingExpense, onCancelEdit }: 
       newErrors.amount = "Enter a valid amount greater than 0";
     }
     if (Number(form.amount) > 999999.99) {
-      newErrors.amount = "Amount cannot exceed $999,999.99";
+      newErrors.amount = "Amount cannot exceed ₹9,99,999.99";
     }
     if (!form.description.trim()) {
       newErrors.description = "Description is required";
@@ -93,7 +93,7 @@ export default function ExpenseForm({ onSubmit, editingExpense, onCancelEdit }: 
           </label>
           <div className="relative">
             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 font-medium">
-              $
+              ₹
             </span>
             <input
               type="number"
